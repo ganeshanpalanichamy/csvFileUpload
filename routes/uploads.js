@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var tableify = require('tableify');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -23,26 +24,27 @@ router.post('/upload', function(req, res, next) {
 		var fs = require("fs");
 
 
-		// fs.readFile(img.path, function(err, data) {
+		 fs.readFile(img.path, function(err, data) {
 		var path="./public/docs/"+img.originalFilename;		
-	// 	fs.writeFile(path, data, function(error){
-	// 		if(error) console.log(error);
-	// 		res.send("Upload Success");
-	// 	});	
-	// });
+		fs.writeFile(path, data, function(error){
+			if(error) console.log(error);
+			//res.send("Upload Success");
+		});	
+	});
 
 var parse = require('csv-parse');
 var csvData=[];
 fs.createReadStream(img.path)
     .pipe(parse({delimiter: ':'}))
     .on('data', function(csvrow) {
-        console.log(csvrow);
+       // console.log(csvrow);
         //csvrow functions to be performed here
         csvData.push(csvrow);        
     })
     .on('end',function() {
-      //csvData functions to be performed here
-      res.send(csvData);
+      //csvData functions to be performed here - tableify is used to bring table structure for json array
+       var html = tableify(csvData);
+       res.send(html);
   });
 
 });
